@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -18,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { services, serviceProviders, availableTimeSlots, ServiceOption } from "@/utils/data";
-import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, CreditCard, CheckCircle, AlertCircle, Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -59,7 +58,6 @@ const Booking = () => {
       return;
     }
     
-    // Generate a random booking ID
     setBookingId(`BK${Math.floor(100000 + Math.random() * 900000)}`);
   }, [serviceId, optionId, service, selectedOption, navigate]);
   
@@ -90,7 +88,6 @@ const Booking = () => {
       setCurrentStep("payment");
     } 
     else if (currentStep === "payment") {
-      // Simulate payment processing
       toast.success("Payment successful!");
       setCurrentStep("confirmation");
       setBookingComplete(true);
@@ -114,7 +111,6 @@ const Booking = () => {
     );
   };
   
-  // Format date to readable string
   const formattedDate = bookingDate ? format(bookingDate, "EEEE, MMMM d, yyyy") : "";
   
   if (!service || !selectedOption) {
@@ -127,7 +123,6 @@ const Booking = () => {
       
       <main className="flex-grow pt-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Booking header */}
           <div className="mb-8">
             <button 
               onClick={() => 
@@ -146,7 +141,6 @@ const Booking = () => {
             <p className="text-gray-600">{selectedOption.name} - ₹{selectedOption.price}</p>
           </div>
           
-          {/* Progress steps */}
           <div className="mb-8">
             <div className="flex justify-between max-w-3xl mx-auto">
               {(["details", "datetime", "address", "payment", "confirmation"] as BookingStep[]).map((step, index) => (
@@ -185,7 +179,6 @@ const Booking = () => {
             </div>
           </div>
           
-          {/* Current step content */}
           <div className="max-w-3xl mx-auto">
             {currentStep === "details" && (
               <motion.div 
@@ -303,7 +296,6 @@ const Booking = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      {/* Date selection */}
                       <div>
                         <Label className="text-base font-medium mb-2 block">Select Date</Label>
                         <div className="grid grid-cols-4 gap-3 mt-2">
@@ -333,7 +325,6 @@ const Booking = () => {
                         </div>
                       </div>
                       
-                      {/* Time slot selection */}
                       <div>
                         <Label className="text-base font-medium mb-2 block">Select Time Slot</Label>
                         <div className="grid grid-cols-3 gap-3 mt-2">
@@ -367,7 +358,6 @@ const Booking = () => {
                         </div>
                       </div>
                       
-                      {/* Service notes */}
                       <div>
                         <Label htmlFor="notes" className="text-base font-medium mb-2 block">
                           Additional Notes (Optional)
@@ -516,7 +506,6 @@ const Booking = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      {/* Booking summary */}
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-semibold mb-3">Booking Summary</h3>
                         <div className="space-y-2 text-sm">
@@ -561,7 +550,6 @@ const Booking = () => {
                         </div>
                       </div>
                       
-                      {/* Payment method */}
                       <div>
                         <Label className="text-base font-medium mb-4 block">
                           Select Payment Method

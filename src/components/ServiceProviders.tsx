@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { serviceProviders } from "@/utils/data";
+import { serviceProviders, services } from "@/utils/data";
 import { Star } from "lucide-react";
 
 const ServiceProviders = () => {

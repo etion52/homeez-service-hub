@@ -21,7 +21,9 @@ import {
   CheckCircle2, 
   ChevronRight,
   Check,
-  X
+  X,
+  Phone,
+  Mail
 } from "lucide-react";
 import { toast } from "sonner";
 
