@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -77,22 +76,30 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Heart className="mr-2 h-4 w-4" />
-                      <span>Wishlist</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Clock className="mr-2 h-4 w-4" />
-                      <span>Service History</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
+                    <Link to="/profile">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to="/profile?tab=wishlist">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Heart className="mr-2 h-4 w-4" />
+                        <span>Wishlist</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to="/profile?tab=bookings">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Clock className="mr-2 h-4 w-4" />
+                        <span>Service History</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to="/profile?tab=settings">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem className="cursor-pointer">
                       <HelpCircle className="mr-2 h-4 w-4" />
                       <span>Help & Support</span>

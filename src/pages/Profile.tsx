@@ -1,5 +1,5 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -13,6 +13,16 @@ import { toast } from "sonner";
 import { User, Clock, Heart, Star, Settings, HelpCircle, LogOut } from "lucide-react";
 
 const Profile = () => {
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState("profile");
+  
+  useEffect(() => {
+    if (tabParam && ["profile", "bookings", "wishlist", "settings"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+  
   const [userInfo, setUserInfo] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
@@ -35,7 +45,6 @@ const Profile = () => {
     setEditedUserInfo(prev => ({ ...prev, [name]: value }));
   };
   
-  // Sample booking history
   const bookings = [
     {
       id: "BK123456",
@@ -63,7 +72,6 @@ const Profile = () => {
     },
   ];
   
-  // Sample wishlist
   const wishlist = [
     {
       id: "ws1",
@@ -105,7 +113,6 @@ const Profile = () => {
       <main className="flex-grow pt-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar */}
             <div className="md:w-1/4">
               <Card>
                 <CardContent className="p-6">
@@ -121,21 +128,33 @@ const Profile = () => {
                   <nav className="space-y-1">
                     <a
                       href="#profile"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md bg-homeez-50 text-homeez-600"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("profile");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "profile" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <User className="h-5 w-5" />
                       <span>Profile</span>
                     </a>
                     <a
                       href="#bookings"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("bookings");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "bookings" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <Clock className="h-5 w-5" />
                       <span>Booking History</span>
                     </a>
                     <a
                       href="#wishlist"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("wishlist");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "wishlist" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <Heart className="h-5 w-5" />
                       <span>Wishlist</span>
@@ -149,7 +168,11 @@ const Profile = () => {
                     </a>
                     <a
                       href="#settings"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("settings");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "settings" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <Settings className="h-5 w-5" />
                       <span>Settings</span>
@@ -172,9 +195,8 @@ const Profile = () => {
               </Card>
             </div>
             
-            {/* Main content */}
             <div className="md:w-3/4">
-              <Tabs defaultValue="profile" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="w-full grid grid-cols-4 mb-6">
                   <TabsTrigger value="profile">Profile</TabsTrigger>
                   <TabsTrigger value="bookings">Bookings</TabsTrigger>
@@ -182,7 +204,6 @@ const Profile = () => {
                   <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
                 
-                {/* Profile Tab */}
                 <TabsContent value="profile">
                   <Card>
                     <CardHeader>
@@ -321,7 +342,6 @@ const Profile = () => {
                   </Card>
                 </TabsContent>
                 
-                {/* Bookings Tab */}
                 <TabsContent value="bookings">
                   <Card>
                     <CardHeader>
@@ -388,7 +408,6 @@ const Profile = () => {
                   </Card>
                 </TabsContent>
                 
-                {/* Wishlist Tab */}
                 <TabsContent value="wishlist">
                   <Card>
                     <CardHeader>
@@ -435,7 +454,6 @@ const Profile = () => {
                   </Card>
                 </TabsContent>
                 
-                {/* Settings Tab */}
                 <TabsContent value="settings">
                   <Card>
                     <CardHeader>
