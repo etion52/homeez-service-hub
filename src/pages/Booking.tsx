@@ -49,7 +49,8 @@ const Booking = () => {
   const [paymentMethod, setPaymentMethod] = useState<string>("online");
   const [bookingComplete, setBookingComplete] = useState(false);
   const [bookingId, setBookingId] = useState("");
-  
+  const [phoneError, setPhoneError] = useState<string>("");
+
   useEffect(() => {
     window.scrollTo(0, 0);
     
@@ -64,6 +65,23 @@ const Booking = () => {
   const providers = serviceProviders.filter(provider => 
     provider.serviceIds.includes(serviceId || "") && !provider.busy
   );
+  
+  const validatePhoneNumber = (phone: string): boolean => {
+    const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/;
+    
+    if (!phone) {
+      setPhoneError("Phone number is required");
+      return false;
+    }
+    
+    if (!phoneRegex.test(phone)) {
+      setPhoneError("Please enter a valid Indian phone number");
+      return false;
+    }
+    
+    setPhoneError("");
+    return true;
+  };
   
   const handleNext = () => {
     if (currentStep === "details") {
@@ -85,6 +103,12 @@ const Booking = () => {
         toast.error("Please fill in all required address fields");
         return;
       }
+      
+      if (!validatePhoneNumber(address.phone)) {
+        toast.error("Please enter a valid phone number");
+        return;
+      }
+      
       setCurrentStep("payment");
     } 
     else if (currentStep === "payment") {
@@ -112,6 +136,117 @@ const Booking = () => {
   };
   
   const formattedDate = bookingDate ? format(bookingDate, "EEEE, MMMM d, yyyy") : "";
+  
+  const renderAddressForm = () => {
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Service Address</CardTitle>
+            <CardDescription>
+              Provide the address where you would like to receive the service
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  placeholder="John Doe"
+                  value={address.name}
+                  onChange={(e) => setAddress({...address, name: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="line1">Address Line 1</Label>
+                <Input 
+                  id="line1" 
+                  placeholder="House/Flat No., Building Name"
+                  value={address.line1}
+                  onChange={(e) => setAddress({...address, line1: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="line2">Address Line 2 (Optional)</Label>
+                <Input 
+                  id="line2" 
+                  placeholder="Street, Locality"
+                  value={address.line2}
+                  onChange={(e) => setAddress({...address, line2: e.target.value})}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="city">City</Label>
+                  <Input 
+                    id="city" 
+                    placeholder="Mumbai"
+                    value={address.city}
+                    onChange={(e) => setAddress({...address, city: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="state">State</Label>
+                  <Input 
+                    id="state" 
+                    placeholder="Maharashtra"
+                    value={address.state}
+                    onChange={(e) => setAddress({...address, state: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="pincode">Pincode</Label>
+                  <Input 
+                    id="pincode" 
+                    placeholder="400001"
+                    value={address.pincode}
+                    onChange={(e) => setAddress({...address, pincode: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input 
+                    id="phone" 
+                    placeholder="+91 9876543210"
+                    value={address.phone}
+                    onChange={(e) => {
+                      setAddress({...address, phone: e.target.value});
+                      if (phoneError) setPhoneError("");
+                    }}
+                    onBlur={(e) => validatePhoneNumber(e.target.value)}
+                    error={phoneError}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={handleBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              className="bg-homeez-600 hover:bg-homeez-700"
+            >
+              Next <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </motion.div>
+    );
+  };
   
   if (!service || !selectedOption) {
     return null;
@@ -386,109 +521,7 @@ const Booking = () => {
               </motion.div>
             )}
             
-            {currentStep === "address" && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Service Address</CardTitle>
-                    <CardDescription>
-                      Provide the address where you would like to receive the service
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input 
-                          id="name" 
-                          placeholder="John Doe"
-                          value={address.name}
-                          onChange={(e) => setAddress({...address, name: e.target.value})}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="line1">Address Line 1</Label>
-                        <Input 
-                          id="line1" 
-                          placeholder="House/Flat No., Building Name"
-                          value={address.line1}
-                          onChange={(e) => setAddress({...address, line1: e.target.value})}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="line2">Address Line 2 (Optional)</Label>
-                        <Input 
-                          id="line2" 
-                          placeholder="Street, Locality"
-                          value={address.line2}
-                          onChange={(e) => setAddress({...address, line2: e.target.value})}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="city">City</Label>
-                          <Input 
-                            id="city" 
-                            placeholder="Mumbai"
-                            value={address.city}
-                            onChange={(e) => setAddress({...address, city: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="state">State</Label>
-                          <Input 
-                            id="state" 
-                            placeholder="Maharashtra"
-                            value={address.state}
-                            onChange={(e) => setAddress({...address, state: e.target.value})}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="pincode">Pincode</Label>
-                          <Input 
-                            id="pincode" 
-                            placeholder="400001"
-                            value={address.pincode}
-                            onChange={(e) => setAddress({...address, pincode: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="phone">Phone Number</Label>
-                          <Input 
-                            id="phone" 
-                            placeholder="+91 9876543210"
-                            value={address.phone}
-                            onChange={(e) => setAddress({...address, phone: e.target.value})}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={handleBack}>
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                    </Button>
-                    <Button 
-                      onClick={handleNext}
-                      className="bg-homeez-600 hover:bg-homeez-700"
-                    >
-                      Next <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            )}
+            {currentStep === "address" && renderAddressForm()}
             
             {currentStep === "payment" && (
               <motion.div 
