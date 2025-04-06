@@ -58,6 +58,10 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       return;
     }
     
+    if (!loginEmail || !loginPassword) {
+      return;
+    }
+    
     await signIn(loginEmail, loginPassword);
     onSuccess();
   };
@@ -113,7 +117,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full max-w-md mx-auto">
+    <div className="flex items-center justify-center w-full max-w-md mx-auto" id="auth-form">
       <Card className="w-full shadow-medium">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">

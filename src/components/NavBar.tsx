@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,11 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, X, User, LogOut, Settings, Heart, Clock, HelpCircle, Star } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
-const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
+const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +39,23 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  const getUserInitials = () => {
+    if (!user) return "U";
+    
+    const name = user.user_metadata?.full_name || "";
+    if (!name) return "U";
+    
+    const parts = name.split(" ");
+    if (parts.length > 1) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return name[0]?.toUpperCase() || "U";
+  };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-lg shadow-sm" : "bg-transparent"}`}>
@@ -57,22 +78,22 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            {isLoggedIn ? (
+            {user ? (
               <div className="flex items-center space-x-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name || "User"} />
+                        <AvatarFallback>{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium">User Name</p>
-                        <p className="text-xs text-muted-foreground">user@example.com</p>
+                        <p className="text-sm font-medium">{user.user_metadata?.full_name || "User"}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -109,7 +130,7 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
                       <span>Rate Us</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer text-red-600">
+                    <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>
@@ -118,16 +139,12 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               </div>
             ) : (
               <div className="hidden md:flex items-center space-x-3">
-                <Link to="/login">
-                  <Button variant="outline" className="h-9">
-                    Sign in
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button className="h-9 bg-homeez-600 hover:bg-homeez-700">
-                    Sign up
-                  </Button>
-                </Link>
+                <Button variant="outline" className="h-9" onClick={() => navigate("/")}>
+                  Sign in
+                </Button>
+                <Button className="h-9 bg-homeez-600 hover:bg-homeez-700" onClick={() => navigate("/")}>
+                  Sign up
+                </Button>
               </div>
             )}
 
@@ -155,18 +172,14 @@ const NavBar = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             <Link to="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100">About</Link>
             <Link to="/contact" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100">Contact</Link>
             
-            {!isLoggedIn && (
+            {!user && (
               <div className="flex flex-col space-y-2 mt-4 px-3">
-                <Link to="/login">
-                  <Button variant="outline" className="w-full">
-                    Sign in
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button className="w-full bg-homeez-600 hover:bg-homeez-700">
-                    Sign up
-                  </Button>
-                </Link>
+                <Button variant="outline" className="w-full" onClick={() => navigate("/")}>
+                  Sign in
+                </Button>
+                <Button className="w-full bg-homeez-600 hover:bg-homeez-700" onClick={() => navigate("/")}>
+                  Sign up
+                </Button>
               </div>
             )}
           </div>
