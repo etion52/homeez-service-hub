@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Booking } from "@/types/database.types";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";

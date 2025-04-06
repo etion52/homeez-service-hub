@@ -9,7 +9,140 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          address: string
+          booking_date: string
+          booking_time: string
+          created_at: string
+          id: string
+          price: number
+          service_id: string
+          service_option_id: string
+          service_provider_id: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address: string
+          booking_date: string
+          booking_time: string
+          created_at?: string
+          id?: string
+          price: number
+          service_id: string
+          service_option_id: string
+          service_provider_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string
+          booking_date?: string
+          booking_time?: string
+          created_at?: string
+          id?: string
+          price?: number
+          service_id?: string
+          service_option_id?: string
+          service_provider_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: string
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          service_provider_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          booking_id: string
+          comment: string
+          created_at?: string
+          id?: string
+          rating: number
+          service_provider_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          booking_id?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          service_provider_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
