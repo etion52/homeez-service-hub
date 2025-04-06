@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Booking } from "@/types/database.types";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -25,17 +25,19 @@ export const useBookings = () => {
     try {
       setIsLoading(true);
       
-      const { error } = await supabase.from("bookings").insert({
-        user_id: user.id,
-        service_id: serviceId,
-        service_option_id: serviceOptionId,
-        booking_date: bookingDate,
-        booking_time: bookingTime,
-        status: "pending",
-        address,
-        price,
-        created_at: new Date().toISOString(),
-      });
+      const { error } = await supabase
+        .from("bookings")
+        .insert({
+          user_id: user.id,
+          service_id: serviceId,
+          service_option_id: serviceOptionId,
+          booking_date: bookingDate,
+          booking_time: bookingTime,
+          status: "pending",
+          address,
+          price,
+          created_at: new Date().toISOString(),
+        });
 
       if (error) {
         toast.error(error.message);

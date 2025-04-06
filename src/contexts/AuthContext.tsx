@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Create profile in profiles table
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from("profiles")
         .insert({ 
           id: (await supabase.auth.getUser()).data.user?.id,
           full_name: fullName, 
