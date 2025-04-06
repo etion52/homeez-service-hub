@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,23 +12,23 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 type AuthFormProps = {
   onSuccess: () => void;
 };
 
 const AuthForm = ({ onSuccess }: AuthFormProps) => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
+  const { signIn, signUp, resetPassword, isLoading } = useAuth();
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   
   // Register form state
   const [fullName, setFullName] = useState("");
@@ -38,54 +37,79 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   const [dob, setDob] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validatePhone = (phone: string) => {
+    // Indian phone number validation: 10 digits, optionally with +91 prefix
+    const phoneRegex = /^(?:\+91)?[6-9]\d{9}$/;
+    return phoneRegex.test(phone);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
-      toast.error("Please fill in all fields");
+    
+    if (showForgotPassword) {
+      if (!loginEmail) {
+        return;
+      }
+      await resetPassword(loginEmail);
+      setShowForgotPassword(false);
       return;
     }
     
-    setIsLoginLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoginLoading(false);
-      toast.success("Login successful");
-      onSuccess();
-      navigate("/dashboard");
-    }, 1500);
+    await signIn(loginEmail, loginPassword);
+    onSuccess();
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Reset errors
+    const newErrors: Record<string, string> = {};
+    
     // Validate form
-    if (!fullName || !email || !phone || !dob || !password || !confirmPassword) {
-      toast.error("Please fill in all fields");
-      return;
+    if (!fullName) {
+      newErrors.fullName = "Full name is required";
+    }
+    
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email is invalid";
+    }
+    
+    if (!phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!validatePhone(phone)) {
+      newErrors.phone = "Phone number is invalid. Enter a valid Indian mobile number";
+    }
+    
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
     
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
+      newErrors.confirmPassword = "Passwords do not match";
     }
     
     if (!acceptTerms) {
-      toast.error("Please accept the terms and conditions");
+      newErrors.terms = "You must accept the terms and conditions";
+    }
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
     
-    setIsRegisterLoading(true);
+    // Remove any +91 prefix for consistent storage
+    const normalizedPhone = phone.replace(/^\+91/, "");
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsRegisterLoading(false);
-      toast.success("Registration successful");
-      setActiveTab("login");
-    }, 1500);
+    await signUp(email, password, fullName, normalizedPhone);
+    setActiveTab("login");
   };
 
   return (
@@ -109,7 +133,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
             <TabsContent value="login" className="animate-fade-in">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{showForgotPassword ? "Enter your email" : "Email"}</Label>
                   <Input 
                     id="login-email" 
                     type="email" 
@@ -119,38 +143,64 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <a href="#" className="text-xs text-homeez-600 hover:underline">
-                      Forgot password?
-                    </a>
+                
+                {!showForgotPassword && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <button 
+                        type="button" 
+                        className="text-xs text-homeez-600 hover:underline"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <Input 
+                        id="login-password" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                      />
+                      <button 
+                        type="button"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
-                  <div className="relative">
-                    <Input 
-                      id="login-password" 
-                      type={showPassword ? "text" : "password"} 
-                      placeholder="••••••••" 
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      required
-                    />
-                    <button 
-                      type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
-                </div>
+                )}
+                
                 <Button 
                   type="submit" 
                   className="w-full bg-homeez-600 hover:bg-homeez-700 transition-colors"
-                  disabled={isLoginLoading}
+                  disabled={isLoading}
                 >
-                  {isLoginLoading ? "Signing in..." : "Sign In"}
+                  {isLoading 
+                    ? showForgotPassword 
+                      ? "Sending reset link..." 
+                      : "Signing in..." 
+                    : showForgotPassword 
+                      ? "Send Reset Link" 
+                      : "Sign In"
+                  }
                 </Button>
+                
+                {showForgotPassword && (
+                  <Button 
+                    type="button"
+                    variant="link" 
+                    className="w-full"
+                    onClick={() => setShowForgotPassword(false)}
+                  >
+                    Back to Login
+                  </Button>
+                )}
               </form>
             </TabsContent>
             
@@ -164,6 +214,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
+                    error={errors.fullName}
                   />
                 </div>
                 <div className="space-y-2">
@@ -175,6 +226,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    error={errors.email}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -187,6 +239,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
+                      error={errors.phone}
                     />
                   </div>
                   <div className="space-y-2">
@@ -210,6 +263,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      error={errors.password}
                     />
                     <button 
                       type="button"
@@ -229,6 +283,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    error={errors.confirmPassword}
                   />
                 </div>
                 <div className="flex items-center space-x-2 py-2">
@@ -247,12 +302,13 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     </a>
                   </label>
                 </div>
+                {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
                 <Button 
                   type="submit" 
                   className="w-full bg-homeez-600 hover:bg-homeez-700 transition-colors"
-                  disabled={isRegisterLoading}
+                  disabled={isLoading}
                 >
-                  {isRegisterLoading ? "Creating account..." : "Create Account"}
+                  {isLoading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
