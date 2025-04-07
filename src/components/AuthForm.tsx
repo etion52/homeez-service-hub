@@ -18,10 +18,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 type AuthFormProps = {
   onSuccess: () => void;
+  defaultTab?: string;
 };
 
-const AuthForm = ({ onSuccess }: AuthFormProps) => {
-  const [activeTab, setActiveTab] = useState("login");
+const AuthForm = ({ onSuccess, defaultTab = "login" }: AuthFormProps) => {
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp, resetPassword, isLoading } = useAuth();
   
@@ -128,7 +129,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="login">Sign In</TabsTrigger>
               <TabsTrigger value="register">Sign Up</TabsTrigger>
@@ -218,8 +219,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    error={errors.fullName}
                   />
+                  {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -230,8 +231,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    error={errors.email}
                   />
+                  {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -243,8 +244,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
-                      error={errors.phone}
                     />
+                    {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dob">Date of Birth</Label>
@@ -267,7 +268,6 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      error={errors.password}
                     />
                     <button 
                       type="button"
@@ -277,6 +277,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
+                  {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -287,8 +288,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    error={errors.confirmPassword}
                   />
+                  {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
                 </div>
                 <div className="flex items-center space-x-2 py-2">
                   <Checkbox 

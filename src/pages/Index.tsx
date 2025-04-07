@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import AuthForm from "@/components/AuthForm";
@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [activeAuthTab, setActiveAuthTab] = useState("login");
   
   // Redirect to dashboard if user is already logged in
   useEffect(() => {
@@ -25,11 +26,27 @@ const Index = () => {
     navigate("/dashboard");
   };
   
+  const handleSignUpClick = () => {
+    const authFormElement = document.getElementById('auth-form');
+    setActiveAuthTab("register");
+    if (authFormElement) {
+      authFormElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  const handleSignInClick = () => {
+    const authFormElement = document.getElementById('auth-form');
+    setActiveAuthTab("login");
+    if (authFormElement) {
+      authFormElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
       
-      <HeroSection />
+      <HeroSection onSignUpClick={handleSignUpClick} />
       
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,6 +93,21 @@ const Index = () => {
                     Choose your preferred service providers
                   </li>
                 </ul>
+                
+                <div className="flex space-x-3">
+                  <button 
+                    onClick={handleSignInClick}
+                    className="px-4 py-2 border border-homeez-600 text-homeez-600 rounded-md hover:bg-homeez-50 transition-colors"
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    onClick={handleSignUpClick}
+                    className="px-4 py-2 bg-homeez-600 text-white rounded-md hover:bg-homeez-700 transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               </motion.div>
             </div>
             
@@ -86,7 +118,7 @@ const Index = () => {
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true }}
               >
-                <AuthForm onSuccess={handleAuthSuccess} />
+                <AuthForm onSuccess={handleAuthSuccess} defaultTab={activeAuthTab} />
               </motion.div>
             </div>
           </div>
@@ -105,12 +137,7 @@ const Index = () => {
           </p>
           <button 
             className="bg-white text-homeez-600 px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors"
-            onClick={() => {
-              const authFormElement = document.getElementById('auth-form');
-              if (authFormElement) {
-                authFormElement.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
+            onClick={handleSignUpClick}
           >
             Sign Up Now
           </button>

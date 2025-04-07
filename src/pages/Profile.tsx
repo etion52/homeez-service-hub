@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -10,12 +11,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { User, Clock, Heart, Star, Settings, HelpCircle, LogOut } from "lucide-react";
+import { 
+  User, 
+  Clock, 
+  Heart, 
+  Star, 
+  Settings, 
+  HelpCircle, 
+  LogOut, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  Home, 
+  UploadCloud 
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Profile = () => {
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState("profile");
+  const { user, signOut, updateProfile, getUserProfile } = useAuth();
+  
+  // User profile data
+  const [userProfile, setUserProfile] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    address: "",
+    avatar_url: "",
+    created_at: ""
+  });
   
   useEffect(() => {
     if (tabParam && ["profile", "bookings", "wishlist", "settings"].includes(tabParam)) {
@@ -23,26 +49,53 @@ const Profile = () => {
     }
   }, [tabParam]);
   
-  const [userInfo, setUserInfo] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+91 9876543210",
-    address: "123 Main Street, Mumbai, Maharashtra - 400001",
-    dob: "1990-01-01"
-  });
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        const profileData = await getUserProfile();
+        if (profileData) {
+          setUserProfile(profileData);
+          // Also update the edit form data
+          setEditedUserInfo({
+            full_name: profileData.full_name || "",
+            phone: profileData.phone || "",
+            address: profileData.address || "",
+            avatar_url: profileData.avatar_url || ""
+          });
+        }
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user, getUserProfile]);
   
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUserInfo, setEditedUserInfo] = useState({ ...userInfo });
+  const [editedUserInfo, setEditedUserInfo] = useState({
+    full_name: "",
+    phone: "",
+    address: "",
+    avatar_url: ""
+  });
   
-  const handleSaveProfile = () => {
-    setUserInfo(editedUserInfo);
+  const handleSaveProfile = async () => {
+    await updateProfile(editedUserInfo);
+    // Refresh the user profile data
+    const updatedProfile = await getUserProfile();
+    if (updatedProfile) {
+      setUserProfile(updatedProfile);
+    }
     setIsEditing(false);
-    toast.success("Profile updated successfully!");
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditedUserInfo(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleUploadAvatar = () => {
+    // In a real app, this would open a file picker and upload the image to storage
+    toast.info("Avatar upload functionality will be implemented soon");
   };
   
   const bookings = [
@@ -106,9 +159,31 @@ const Profile = () => {
     }
   };
   
+  // Format date from ISO string
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }).format(date);
+  };
+  
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!userProfile.full_name) return "U";
+    
+    const parts = userProfile.full_name.split(" ");
+    if (parts.length > 1) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return userProfile.full_name[0]?.toUpperCase() || "U";
+  };
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <NavBar isLoggedIn={true} />
+      <NavBar />
       
       <main className="flex-grow pt-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -118,11 +193,11 @@ const Profile = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center mb-6">
                     <Avatar className="w-24 h-24 mb-4">
-                      <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name} />
+                      <AvatarFallback>{getUserInitials()}</AvatarFallback>
                     </Avatar>
-                    <h2 className="text-xl font-bold">{userInfo.name}</h2>
-                    <p className="text-gray-500 text-sm">{userInfo.email}</p>
+                    <h2 className="text-xl font-bold">{userProfile.full_name}</h2>
+                    <p className="text-gray-500 text-sm">{userProfile.email}</p>
                   </div>
                   
                   <nav className="space-y-1">
@@ -161,7 +236,11 @@ const Profile = () => {
                     </a>
                     <a
                       href="#ratings"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("ratings");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "ratings" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <Star className="h-5 w-5" />
                       <span>My Ratings</span>
@@ -179,13 +258,20 @@ const Profile = () => {
                     </a>
                     <a
                       href="#help"
-                      className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("help");
+                      }}
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md ${activeTab === "help" ? "bg-homeez-50 text-homeez-600" : "text-gray-700 hover:bg-gray-100"}`}
                     >
                       <HelpCircle className="h-5 w-5" />
                       <span>Help & Support</span>
                     </a>
                     <div className="pt-4 mt-4 border-t">
-                      <button className="flex items-center space-x-3 px-3 py-2 w-full text-left rounded-md text-red-600 hover:bg-red-50">
+                      <button 
+                        onClick={signOut}
+                        className="flex items-center space-x-3 px-3 py-2 w-full text-left rounded-md text-red-600 hover:bg-red-50"
+                      >
                         <LogOut className="h-5 w-5" />
                         <span>Logout</span>
                       </button>
@@ -225,7 +311,12 @@ const Profile = () => {
                               variant="outline"
                               onClick={() => {
                                 setIsEditing(false);
-                                setEditedUserInfo({...userInfo});
+                                setEditedUserInfo({
+                                  full_name: userProfile.full_name || "",
+                                  phone: userProfile.phone || "",
+                                  address: userProfile.address || "",
+                                  avatar_url: userProfile.avatar_url || ""
+                                });
                               }}
                             >
                               Cancel
@@ -243,39 +334,71 @@ const Profile = () => {
                     <CardContent>
                       {!isEditing ? (
                         <div className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <h3 className="text-sm font-medium text-gray-500">Full Name</h3>
-                              <p className="mt-1">{userInfo.name}</p>
+                          <div className="flex flex-col md:flex-row gap-8">
+                            <div className="md:w-1/3 flex justify-center">
+                              <div className="text-center">
+                                <Avatar className="w-32 h-32 mx-auto mb-4">
+                                  <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name} />
+                                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                </Avatar>
+                                <p className="text-sm text-gray-500">Profile photo</p>
+                              </div>
                             </div>
-                            <div>
-                              <h3 className="text-sm font-medium text-gray-500">Email Address</h3>
-                              <p className="mt-1">{userInfo.email}</p>
+                            
+                            <div className="md:w-2/3">
+                              <div className="space-y-4">
+                                <div className="flex items-center">
+                                  <User className="w-5 h-5 text-homeez-600 mr-2" />
+                                  <div>
+                                    <p className="text-sm text-gray-500">Full Name</p>
+                                    <p className="font-medium">{userProfile.full_name || "Not provided"}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <Mail className="w-5 h-5 text-homeez-600 mr-2" />
+                                  <div>
+                                    <p className="text-sm text-gray-500">Email</p>
+                                    <p className="font-medium">{userProfile.email || "Not provided"}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <Phone className="w-5 h-5 text-homeez-600 mr-2" />
+                                  <div>
+                                    <p className="text-sm text-gray-500">Phone Number</p>
+                                    <p className="font-medium">{userProfile.phone || "Not provided"}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <Home className="w-5 h-5 text-homeez-600 mr-2" />
+                                  <div>
+                                    <p className="text-sm text-gray-500">Address</p>
+                                    <p className="font-medium">{userProfile.address || "Not provided"}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <Calendar className="w-5 h-5 text-homeez-600 mr-2" />
+                                  <div>
+                                    <p className="text-sm text-gray-500">Member Since</p>
+                                    <p className="font-medium">{formatDate(userProfile.created_at) || "Not available"}</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <h3 className="text-sm font-medium text-gray-500">Phone Number</h3>
-                              <p className="mt-1">{userInfo.phone}</p>
-                            </div>
-                            <div>
-                              <h3 className="text-sm font-medium text-gray-500">Date of Birth</h3>
-                              <p className="mt-1">{userInfo.dob}</p>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-500">Address</h3>
-                            <p className="mt-1">{userInfo.address}</p>
                           </div>
                           
                           <div className="border-t pt-6">
                             <h3 className="font-medium mb-4">Account Statistics</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="text-3xl font-bold text-homeez-600 mb-1">3</div>
+                                <div className="text-3xl font-bold text-homeez-600 mb-1">{bookings.length}</div>
                                 <div className="text-sm text-gray-600">Services Booked</div>
                               </div>
                               <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="text-3xl font-bold text-homeez-600 mb-1">2</div>
+                                <div className="text-3xl font-bold text-homeez-600 mb-1">{wishlist.length}</div>
                                 <div className="text-sm text-gray-600">Active Wishlist Items</div>
                               </div>
                               <div className="bg-gray-50 p-4 rounded-lg">
@@ -287,54 +410,69 @@ const Profile = () => {
                         </div>
                       ) : (
                         <div className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <Label htmlFor="name">Full Name</Label>
-                              <Input 
-                                id="name" 
-                                name="name"
-                                value={editedUserInfo.name}
-                                onChange={handleInputChange}
-                              />
+                          <div className="flex flex-col md:flex-row gap-8">
+                            <div className="md:w-1/3 flex justify-center">
+                              <div className="text-center">
+                                <Avatar className="w-32 h-32 mx-auto mb-4">
+                                  <AvatarImage src={editedUserInfo.avatar_url} alt={editedUserInfo.full_name} />
+                                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                </Avatar>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="text-xs flex items-center"
+                                  onClick={handleUploadAvatar}
+                                >
+                                  <UploadCloud className="h-3 w-3 mr-1" />
+                                  Change Photo
+                                </Button>
+                              </div>
                             </div>
-                            <div>
-                              <Label htmlFor="email">Email Address</Label>
-                              <Input 
-                                id="email" 
-                                name="email"
-                                value={editedUserInfo.email}
-                                onChange={handleInputChange}
-                              />
+                            
+                            <div className="md:w-2/3">
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="full_name">Full Name</Label>
+                                  <Input 
+                                    id="full_name"
+                                    name="full_name"
+                                    value={editedUserInfo.full_name}
+                                    onChange={handleInputChange}
+                                  />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <Label htmlFor="email">Email</Label>
+                                  <Input 
+                                    id="email"
+                                    value={userProfile.email}
+                                    disabled
+                                    className="bg-gray-50"
+                                  />
+                                  <p className="text-xs text-gray-500">Email cannot be changed</p>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <Label htmlFor="phone">Phone Number</Label>
+                                  <Input 
+                                    id="phone"
+                                    name="phone"
+                                    value={editedUserInfo.phone}
+                                    onChange={handleInputChange}
+                                  />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <Label htmlFor="address">Address</Label>
+                                  <Input 
+                                    id="address"
+                                    name="address"
+                                    value={editedUserInfo.address}
+                                    onChange={handleInputChange}
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <Label htmlFor="phone">Phone Number</Label>
-                              <Input 
-                                id="phone" 
-                                name="phone"
-                                value={editedUserInfo.phone}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="dob">Date of Birth</Label>
-                              <Input 
-                                id="dob" 
-                                name="dob"
-                                type="date"
-                                value={editedUserInfo.dob}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="address">Address</Label>
-                            <Input 
-                              id="address" 
-                              name="address"
-                              value={editedUserInfo.address}
-                              onChange={handleInputChange}
-                            />
                           </div>
                         </div>
                       )}
@@ -450,6 +588,75 @@ const Profile = () => {
                           </motion.div>
                         ))}
                       </motion.div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="ratings">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>My Ratings & Reviews</CardTitle>
+                      <CardDescription>See your ratings and reviews for previous services</CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center py-10">
+                      <div className="mb-4">
+                        <Star className="h-12 w-12 mx-auto text-gray-300" />
+                      </div>
+                      <h3 className="text-xl font-medium mb-2">No Ratings Yet</h3>
+                      <p className="text-gray-500 max-w-md mx-auto">
+                        You haven't rated any services yet. After completing a service, you'll be able to leave ratings and reviews here.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="help">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Help & Support</CardTitle>
+                      <CardDescription>Get assistance with your HomeEZ account</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h3 className="font-medium mb-2">Frequently Asked Questions</h3>
+                          <div className="space-y-3">
+                            <div className="bg-white p-3 rounded border">
+                              <h4 className="font-medium">How do I cancel a booking?</h4>
+                              <p className="text-sm text-gray-600 mt-1">
+                                Go to your Booking History, find the booking you want to cancel, and click "Cancel Booking".
+                              </p>
+                            </div>
+                            <div className="bg-white p-3 rounded border">
+                              <h4 className="font-medium">How do I reschedule a service?</h4>
+                              <p className="text-sm text-gray-600 mt-1">
+                                Contact our customer support team at least 4 hours before your scheduled appointment to reschedule.
+                              </p>
+                            </div>
+                            <div className="bg-white p-3 rounded border">
+                              <h4 className="font-medium">How do payments work?</h4>
+                              <p className="text-sm text-gray-600 mt-1">
+                                You can pay online through our secure payment gateway or in cash after the service is completed.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-homeez-50 p-6 rounded-lg text-center">
+                          <h3 className="text-lg font-medium mb-3">Need more help?</h3>
+                          <p className="mb-4 text-gray-700">
+                            Our support team is here to help you with any questions or issues.
+                          </p>
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Button className="bg-homeez-600 hover:bg-homeez-700">
+                              Contact Support
+                            </Button>
+                            <Button variant="outline">
+                              Live Chat
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>

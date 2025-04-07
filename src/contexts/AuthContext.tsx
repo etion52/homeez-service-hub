@@ -13,6 +13,8 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateProfile: (data: { full_name?: string, phone?: string, address?: string, avatar_url?: string }) => Promise<void>;
+  getUserProfile: () => Promise<any>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,6 +55,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  const getUserProfile = async () => {
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    return data;
+  };
+
+  const updateProfile = async (data: { full_name?: string, phone?: string, address?: string, avatar_url?: string }) => {
+    try {
+      if (!user) return;
+      
+      setIsLoading(true);
+      
+      // Update the profile in the profiles table
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: data.full_name,
+          phone: data.phone,
+          address: data.address,
+          avatar_url: data.avatar_url,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", user.id);
+
+      if (error) {
+        toast.error("Failed to update profile");
+        console.error(error);
+        return;
+      }
+
+      // Also update the user metadata (for consistency)
+      if (data.full_name) {
+        await supabase.auth.updateUser({
+          data: { full_name: data.full_name }
+        });
+      }
+
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
@@ -173,6 +232,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signIn,
         signOut,
         resetPassword,
+        updateProfile,
+        getUserProfile,
       }}
     >
       {children}
