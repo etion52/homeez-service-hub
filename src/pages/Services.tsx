@@ -1,10 +1,10 @@
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import NavBarWrapper from "@/components/NavBarWrapper";
 import Footer from "@/components/Footer";
 import { services } from "@/utils/data";
+import ServiceCard from "@/components/ServiceCard";
 
 const Services = () => {
   const navigate = useNavigate();
@@ -38,40 +38,11 @@ const Services = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-hard transition-all duration-300"
-                  onClick={() => navigate(`/services/${service.id}`)}
                 >
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={service.image}
-                      alt={service.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.name}</h3>
-                    <p className="text-gray-600 mb-4">{service.description}</p>
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-500">
-                        {service.options.length} options available
-                      </div>
-                      
-                      <button 
-                        className="text-homeez-600 hover:text-homeez-700 text-sm font-medium flex items-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/services/${service.id}`);
-                        }}
-                      >
-                        View Details
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                  <ServiceCard 
+                    service={service} 
+                    featured={false}
+                  />
                 </motion.div>
               ))}
             </div>
