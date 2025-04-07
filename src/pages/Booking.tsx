@@ -29,7 +29,7 @@ const Booking = () => {
   const optionId = searchParams.get("option");
   const navigate = useNavigate();
   
-  const [service, setService] = useState(services.find(s => s.id === serviceId));
+  const [service, setService] = useState(services.find(service => service.id === Number(serviceId)));
   const [selectedOption, setSelectedOption] = useState<ServiceOption | null>(
     service?.options.find(o => o.id === optionId) || null
   );
@@ -62,8 +62,8 @@ const Booking = () => {
     setBookingId(`BK${Math.floor(100000 + Math.random() * 900000)}`);
   }, [serviceId, optionId, service, selectedOption, navigate]);
   
-  const providers = serviceProviders.filter(provider => 
-    provider.serviceIds.includes(serviceId || "") && !provider.busy
+  const availableProviders = serviceProviders.filter(provider => 
+    provider.serviceIds.includes(Number(service?.id))
   );
   
   const validatePhoneNumber = (phone: string): boolean => {
@@ -331,8 +331,8 @@ const Booking = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {providers.length > 0 ? (
-                        providers.map((provider) => (
+                      {availableProviders.length > 0 ? (
+                        availableProviders.map((provider) => (
                           <div 
                             key={provider.id}
                             className={`border rounded-lg p-4 cursor-pointer transition-all ${

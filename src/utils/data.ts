@@ -1,5 +1,5 @@
 export type Service = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   icon: string;
@@ -9,7 +9,7 @@ export type Service = {
 };
 
 export type ServiceOption = {
-  id: string;
+  id: number;
   name: string;
   price: number;
   duration: string;
@@ -22,7 +22,7 @@ export type ServiceProvider = {
   image: string;
   rating: number;
   reviews: number;
-  experience: string;
+  experience: number;
   serviceIds: number[];
   isFeatured: boolean;
   trustScore: number;
@@ -33,7 +33,7 @@ export type ServiceProvider = {
 
 export const services: Service[] = [
   {
-    id: "home-cleaning",
+    id: 1,
     name: "Home Cleaning",
     description: "Professional cleaning services for your home",
     icon: "home",
@@ -41,35 +41,35 @@ export const services: Service[] = [
     popular: true,
     options: [
       {
-        id: "clean-1bhk-furnished",
+        id: 1,
         name: "Cleaning for Furnished 1BHK",
         price: 1299,
         duration: "3 hours",
         description: "Complete cleaning for a furnished 1BHK apartment"
       },
       {
-        id: "clean-2bhk-furnished",
+        id: 2,
         name: "Cleaning for Furnished 2BHK",
         price: 1699,
         duration: "4 hours",
         description: "Complete cleaning for a furnished 2BHK apartment"
       },
       {
-        id: "clean-3bhk-furnished",
+        id: 3,
         name: "Cleaning for Furnished 3BHK",
         price: 2099,
         duration: "5 hours",
         description: "Complete cleaning for a furnished 3BHK apartment"
       },
       {
-        id: "clean-kitchen",
+        id: 4,
         name: "Kitchen Cleaning",
         price: 699,
         duration: "1.5 hours",
         description: "Deep cleaning for your kitchen including cabinets and appliances"
       },
       {
-        id: "clean-bathroom",
+        id: 5,
         name: "Bathroom Cleaning",
         price: 599,
         duration: "1 hour",
@@ -78,7 +78,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "plumbing",
+    id: 2,
     name: "Plumbing",
     description: "Expert plumbers for all your plumbing needs",
     icon: "wrench",
@@ -86,21 +86,21 @@ export const services: Service[] = [
     popular: true,
     options: [
       {
-        id: "plumb-tap-repair",
+        id: 6,
         name: "Tap Repair/Replacement",
         price: 299,
         duration: "30 minutes",
         description: "Fixing leaky taps or complete replacement"
       },
       {
-        id: "plumb-toilet-repair",
+        id: 7,
         name: "Toilet Repair",
         price: 599,
         duration: "1 hour",
         description: "Fixing toilet issues including flush and leaks"
       },
       {
-        id: "plumb-pipe-leak",
+        id: 8,
         name: "Pipe Leak Repair",
         price: 799,
         duration: "1.5 hours",
@@ -109,7 +109,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "electrician",
+    id: 3,
     name: "Electrician",
     description: "Certified electricians for all electrical work",
     icon: "zap",
@@ -117,21 +117,21 @@ export const services: Service[] = [
     popular: false,
     options: [
       {
-        id: "elec-fan-repair",
+        id: 9,
         name: "Fan Installation/Repair",
         price: 349,
         duration: "45 minutes",
         description: "Fan installation, repair or replacement services"
       },
       {
-        id: "elec-switch-repair",
+        id: 10,
         name: "Switch/Socket Repair",
         price: 199,
         duration: "30 minutes",
         description: "Fixing or replacing faulty switches and sockets"
       },
       {
-        id: "elec-light-install",
+        id: 11,
         name: "Light Installation",
         price: 399,
         duration: "1 hour",
@@ -140,7 +140,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "carpenter",
+    id: 4,
     name: "Carpenter",
     description: "Skilled carpenters for furniture and woodwork",
     icon: "hammer",
@@ -148,21 +148,21 @@ export const services: Service[] = [
     popular: false,
     options: [
       {
-        id: "carp-furniture-repair",
+        id: 12,
         name: "Furniture Repair",
         price: 599,
         duration: "1.5 hours",
         description: "Repair of chairs, tables and other wooden furniture"
       },
       {
-        id: "carp-door-repair",
+        id: 13,
         name: "Door Repair",
         price: 699,
         duration: "2 hours",
         description: "Fixing door alignment, hinges or locks"
       },
       {
-        id: "carp-assembly",
+        id: 14,
         name: "Furniture Assembly",
         price: 999,
         duration: "3 hours",
@@ -171,7 +171,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "pest-control",
+    id: 5,
     name: "Pest Control",
     description: "Professional pest control services",
     icon: "bug",
@@ -179,21 +179,21 @@ export const services: Service[] = [
     popular: true,
     options: [
       {
-        id: "pest-general",
+        id: 15,
         name: "General Pest Control",
         price: 1499,
         duration: "2 hours",
         description: "Treatment for cockroaches, ants and silverfish"
       },
       {
-        id: "pest-bed-bugs",
+        id: 16,
         name: "Bed Bug Treatment",
         price: 2999,
         duration: "3 hours",
         description: "Specialized treatment for bed bugs"
       },
       {
-        id: "pest-termite",
+        id: 17,
         name: "Termite Control",
         price: 4999,
         duration: "4 hours",
@@ -202,7 +202,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "home-decoration",
+    id: 6,
     name: "Home Decoration",
     description: "Interior decorators for your dream home",
     icon: "paintbrush",
@@ -210,21 +210,21 @@ export const services: Service[] = [
     popular: false,
     options: [
       {
-        id: "decor-consultation",
+        id: 18,
         name: "Decoration Consultation",
         price: 999,
         duration: "2 hours",
         description: "Professional advice on interior decoration"
       },
       {
-        id: "decor-wall-painting",
+        id: 19,
         name: "Wall Painting Design",
         price: 7999,
         duration: "3 days",
         description: "Custom wall painting with design elements"
       },
       {
-        id: "decor-full-home",
+        id: 20,
         name: "Full Home Makeover",
         price: 49999,
         duration: "10 days",
@@ -233,7 +233,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "cooking",
+    id: 7,
     name: "Hire Cook",
     description: "Professional cooks for your daily or special needs",
     icon: "utensils",
@@ -241,21 +241,21 @@ export const services: Service[] = [
     popular: false,
     options: [
       {
-        id: "cook-lunch",
+        id: 21,
         name: "Lunch Preparation",
         price: 899,
         duration: "2 hours",
         description: "Preparation of lunch for family"
       },
       {
-        id: "cook-dinner",
+        id: 22,
         name: "Dinner Preparation",
         price: 899,
         duration: "2 hours",
         description: "Preparation of dinner for family"
       },
       {
-        id: "cook-party",
+        id: 23,
         name: "Party Food Preparation",
         price: 3999,
         duration: "6 hours",
@@ -264,7 +264,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "women-salon",
+    id: 8,
     name: "Women's Salon & Spa",
     description: "Beauty treatments and spa services for women",
     icon: "scissors",
@@ -272,28 +272,28 @@ export const services: Service[] = [
     popular: true,
     options: [
       {
-        id: "women-haircut",
+        id: 24,
         name: "Haircut & Styling",
         price: 999,
         duration: "1 hour",
         description: "Professional haircut and styling"
       },
       {
-        id: "women-facial",
+        id: 25,
         name: "Facial",
         price: 1499,
         duration: "1.5 hours",
         description: "Rejuvenating facial treatments"
       },
       {
-        id: "women-waxing",
+        id: 26,
         name: "Full Body Waxing",
         price: 1999,
         duration: "2 hours",
         description: "Complete body waxing services"
       },
       {
-        id: "women-massage",
+        id: 27,
         name: "Massage Therapy",
         price: 1799,
         duration: "1 hour",
@@ -302,7 +302,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "men-salon",
+    id: 9,
     name: "Men's Salon & Massage",
     description: "Grooming and massage services for men",
     icon: "scissors",
@@ -310,28 +310,28 @@ export const services: Service[] = [
     popular: false,
     options: [
       {
-        id: "men-haircut",
+        id: 28,
         name: "Haircut & Styling",
         price: 499,
         duration: "30 minutes",
         description: "Professional haircut and styling for men"
       },
       {
-        id: "men-shave",
+        id: 29,
         name: "Shaving & Beard Trim",
         price: 399,
         duration: "30 minutes",
         description: "Professional shaving and beard grooming"
       },
       {
-        id: "men-facial",
+        id: 30,
         name: "Facial",
         price: 1299,
         duration: "1 hour",
         description: "Facial treatments for men"
       },
       {
-        id: "men-massage",
+        id: 31,
         name: "Massage Therapy",
         price: 1599,
         duration: "1 hour",
@@ -340,7 +340,7 @@ export const services: Service[] = [
     ]
   },
   {
-    id: "medicine-delivery",
+    id: 10,
     name: "Medicine Supply",
     description: "Quick medicine delivery to your doorstep",
     icon: "pill",
@@ -348,21 +348,21 @@ export const services: Service[] = [
     popular: true,
     options: [
       {
-        id: "med-prescription",
+        id: 32,
         name: "Prescription Delivery",
         price: 99,
         duration: "2 hours",
         description: "Delivery of medicines as per prescription"
       },
       {
-        id: "med-otc",
+        id: 33,
         name: "OTC Medicine Delivery",
         price: 49,
         duration: "2 hours",
         description: "Delivery of over-the-counter medicines"
       },
       {
-        id: "med-monthly",
+        id: 34,
         name: "Monthly Medicine Subscription",
         price: 199,
         duration: "Monthly",
@@ -374,13 +374,13 @@ export const services: Service[] = [
 
 export const serviceProviders: ServiceProvider[] = [
   {
-    id: "sp1",
+    id: 1,
     name: "Rajesh Kumar",
     image: "https://randomuser.me/api/portraits/men/1.jpg",
     rating: 4.8,
     reviews: 245,
-    experience: "8 years",
-    serviceIds: ["home-cleaning", "pest-control"],
+    experience: 8,
+    serviceIds: [1, 2],
     isFeatured: true,
     trustScore: 98,
     busy: false,
@@ -388,13 +388,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-1234"
   },
   {
-    id: "sp2",
+    id: 2,
     name: "Priya Sharma",
     image: "https://randomuser.me/api/portraits/women/2.jpg",
     rating: 4.9,
     reviews: 189,
-    experience: "6 years",
-    serviceIds: ["women-salon"],
+    experience: 6,
+    serviceIds: [3],
     isFeatured: true,
     trustScore: 99,
     busy: false,
@@ -402,13 +402,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-5678"
   },
   {
-    id: "sp3",
+    id: 3,
     name: "Mohammed Ali",
     image: "https://randomuser.me/api/portraits/men/3.jpg",
     rating: 4.7,
     reviews: 178,
-    experience: "5 years",
-    serviceIds: ["electrician", "plumbing"],
+    experience: 5,
+    serviceIds: [4, 5],
     isFeatured: true,
     trustScore: 97,
     busy: true,
@@ -416,13 +416,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-9012"
   },
   {
-    id: "sp4",
+    id: 4,
     name: "Anita Desai",
     image: "https://randomuser.me/api/portraits/women/4.jpg",
     rating: 4.9,
     reviews: 290,
-    experience: "9 years",
-    serviceIds: ["cooking"],
+    experience: 9,
+    serviceIds: [6],
     isFeatured: true,
     trustScore: 99,
     busy: false,
@@ -430,13 +430,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-3456"
   },
   {
-    id: "sp5",
+    id: 5,
     name: "Rahul Patel",
     image: "https://randomuser.me/api/portraits/men/5.jpg",
     rating: 4.6,
     reviews: 156,
-    experience: "4 years",
-    serviceIds: ["carpenter"],
+    experience: 4,
+    serviceIds: [7],
     isFeatured: false,
     trustScore: 96,
     busy: false,
@@ -444,13 +444,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-7890"
   },
   {
-    id: "sp6",
+    id: 6,
     name: "Neha Gupta",
     image: "https://randomuser.me/api/portraits/women/6.jpg",
     rating: 4.8,
     reviews: 207,
-    experience: "7 years",
-    serviceIds: ["home-decoration"],
+    experience: 7,
+    serviceIds: [8],
     isFeatured: true,
     trustScore: 98,
     busy: false,
@@ -458,13 +458,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-1357"
   },
   {
-    id: "sp7",
+    id: 7,
     name: "Vikram Singh",
     image: "https://randomuser.me/api/portraits/men/7.jpg",
     rating: 4.7,
     reviews: 163,
-    experience: "6 years",
-    serviceIds: ["men-salon"],
+    experience: 6,
+    serviceIds: [9],
     isFeatured: false,
     trustScore: 97,
     busy: true,
@@ -472,13 +472,13 @@ export const serviceProviders: ServiceProvider[] = [
     phone: "555-2468"
   },
   {
-    id: "sp8",
+    id: 8,
     name: "Sunita Rao",
     image: "https://randomuser.me/api/portraits/women/8.jpg",
     rating: 4.8,
     reviews: 174,
-    experience: "5 years",
-    serviceIds: ["medicine-delivery"],
+    experience: 5,
+    serviceIds: [10],
     isFeatured: false,
     trustScore: 98,
     busy: false,

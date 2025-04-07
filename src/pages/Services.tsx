@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,6 @@ import Footer from "@/components/Footer";
 import { services } from "@/utils/data";
 
 const Services = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const navigate = useNavigate();
   
   return (
