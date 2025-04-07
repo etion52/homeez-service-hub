@@ -35,7 +35,7 @@ const Booking = () => {
   
   useEffect(() => {
     // Convert serviceId to number before comparing
-    const numericServiceId = parseInt(serviceId);
+    const numericServiceId = serviceId ? parseInt(serviceId) : -1;
     const foundService = services.find(s => s.id === numericServiceId);
     
     if (foundService) {

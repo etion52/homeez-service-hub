@@ -1,9 +1,15 @@
 
 import NavBar from "@/components/NavBar";
 
-const NavBarWrapper = () => {
-  // This component simply renders NavBar without passing any props
-  return <NavBar />;
+// Create interface for component props
+interface NavBarWrapperProps {
+  // Define any props that might be passed
+  [key: string]: any;
+}
+
+const NavBarWrapper = (props: NavBarWrapperProps) => {
+  // This component renders NavBar and passes along any props it receives
+  return <NavBar {...props} />;
 };
 
 export default NavBarWrapper;
