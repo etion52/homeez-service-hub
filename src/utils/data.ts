@@ -1,4 +1,3 @@
-
 export type Service = {
   id: string;
   name: string;
@@ -18,16 +17,18 @@ export type ServiceOption = {
 };
 
 export type ServiceProvider = {
-  id: string;
+  id: number;
   name: string;
   image: string;
   rating: number;
   reviews: number;
   experience: string;
-  serviceIds: string[];
+  serviceIds: number[];
   isFeatured: boolean;
   trustScore: number;
   busy: boolean;
+  address?: string;
+  phone?: string;
 };
 
 export const services: Service[] = [
@@ -382,7 +383,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["home-cleaning", "pest-control"],
     isFeatured: true,
     trustScore: 98,
-    busy: false
+    busy: false,
+    address: "123 Main St, Anytown, USA",
+    phone: "555-1234"
   },
   {
     id: "sp2",
@@ -394,7 +397,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["women-salon"],
     isFeatured: true,
     trustScore: 99,
-    busy: false
+    busy: false,
+    address: "456 Elm St, Anytown, USA",
+    phone: "555-5678"
   },
   {
     id: "sp3",
@@ -406,7 +411,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["electrician", "plumbing"],
     isFeatured: true,
     trustScore: 97,
-    busy: true
+    busy: true,
+    address: "789 Oak St, Anytown, USA",
+    phone: "555-9012"
   },
   {
     id: "sp4",
@@ -418,7 +425,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["cooking"],
     isFeatured: true,
     trustScore: 99,
-    busy: false
+    busy: false,
+    address: "101 Pine St, Anytown, USA",
+    phone: "555-3456"
   },
   {
     id: "sp5",
@@ -430,7 +439,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["carpenter"],
     isFeatured: false,
     trustScore: 96,
-    busy: false
+    busy: false,
+    address: "202 Maple St, Anytown, USA",
+    phone: "555-7890"
   },
   {
     id: "sp6",
@@ -442,7 +453,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["home-decoration"],
     isFeatured: true,
     trustScore: 98,
-    busy: false
+    busy: false,
+    address: "303 Cedar St, Anytown, USA",
+    phone: "555-1357"
   },
   {
     id: "sp7",
@@ -454,7 +467,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["men-salon"],
     isFeatured: false,
     trustScore: 97,
-    busy: true
+    busy: true,
+    address: "404 Birch St, Anytown, USA",
+    phone: "555-2468"
   },
   {
     id: "sp8",
@@ -466,7 +481,9 @@ export const serviceProviders: ServiceProvider[] = [
     serviceIds: ["medicine-delivery"],
     isFeatured: false,
     trustScore: 98,
-    busy: false
+    busy: false,
+    address: "505 Willow St, Anytown, USA",
+    phone: "555-5555"
   }
 ];
 

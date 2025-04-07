@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import NavBar from "@/components/NavBar";
+import NavBarWrapper from "@/components/NavBarWrapper";
 import Footer from "@/components/Footer";
 import { services } from "@/utils/data";
 
@@ -11,8 +10,8 @@ const Services = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <NavBar isLoggedIn={isLoggedIn} />
+    <div className="min-h-screen flex flex-col">
+      <NavBarWrapper />
       
       <main className="flex-grow pt-16">
         {/* Hero section */}
